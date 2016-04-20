@@ -38,26 +38,22 @@
 
 using namespace Opm;
 
-BOOST_AUTO_TEST_CASE(noNNC)
-{
-    Opm::ParseContext parseContext;
+BOOST_AUTO_TEST_CASE(noNNC) {
     const std::string filename = "testdata/integration_tests/NNC/noNNC.DATA";
-    Opm::ParserPtr parser(new Opm::Parser());
-    Opm::DeckConstPtr deck(parser->parseFile(filename, parseContext));
-    Opm::EclipseStateConstPtr eclipseState(new EclipseState(deck , parseContext));
-    auto eclGrid = eclipseState->getInputGrid();
+    Opm::Parser parser;
+    Opm::DeckConstPtr deck(parser.parseFile(filename, ParseContext()));
+    Opm::EclipseState eclipseState(*deck);
+    auto eclGrid = eclipseState.getInputGrid();
     Opm::NNC nnc(deck, eclGrid);
     BOOST_CHECK(!nnc.hasNNC());
 }
 
-BOOST_AUTO_TEST_CASE(readDeck)
-{
-    Opm::ParseContext parseContext;
+BOOST_AUTO_TEST_CASE(readDeck) {
     const std::string filename = "testdata/integration_tests/NNC/NNC.DATA";
-    Opm::ParserPtr parser(new Opm::Parser());
-    Opm::DeckConstPtr deck(parser->parseFile(filename, parseContext));
-    Opm::EclipseStateConstPtr eclipseState(new EclipseState(deck , parseContext));
-    auto eclGrid = eclipseState->getInputGrid();
+    Opm::Parser parser;
+    Opm::DeckConstPtr deck(parser.parseFile(filename, ParseContext()));
+    Opm::EclipseState eclipseState(*deck);
+    auto eclGrid = eclipseState.getInputGrid();
     Opm::NNC nnc(deck, eclGrid);
     BOOST_CHECK(nnc.hasNNC());
     const std::vector<NNCdata>& nncdata = nnc.nncdata();
@@ -73,30 +69,27 @@ BOOST_AUTO_TEST_CASE(readDeck)
 
 }
 
-BOOST_AUTO_TEST_CASE(addNNCfromDeck)
-{
-    Opm::ParseContext parseContext;
+BOOST_AUTO_TEST_CASE(addNNCfromDeck) {
     const std::string filename = "testdata/integration_tests/NNC/NNC.DATA";
-    Opm::ParserPtr parser(new Opm::Parser());
-    Opm::DeckConstPtr deck(parser->parseFile(filename, parseContext));
-    Opm::EclipseStateConstPtr eclipseState(new EclipseState(deck , parseContext));
-    auto eclGrid = eclipseState->getInputGrid();
+    Opm::Parser parser;
+    Opm::DeckConstPtr deck(parser.parseFile(filename, ParseContext()));
+    Opm::EclipseState eclipseState(*deck);
+    auto eclGrid = eclipseState.getInputGrid();
     Opm::NNC nnc(deck, eclGrid);
     const std::vector<NNCdata>& nncdata = nnc.nncdata();
 
     // test add NNC
-    nnc.addNNC(2,2,2.0);
+    nnc.addNNC(2, 2, 2.0);
     BOOST_CHECK_EQUAL(nnc.numNNC(), 5);
     BOOST_CHECK_EQUAL(nncdata[4].cell1, 2);
     BOOST_CHECK_EQUAL(nncdata[4].cell2, 2);
     BOOST_CHECK_EQUAL(nncdata[4].trans, 2.0);
 }
 
-BOOST_AUTO_TEST_CASE(addNNC)
-{
+BOOST_AUTO_TEST_CASE(addNNC) {
     Opm::NNC nnc;
     // add NNC
-    nnc.addNNC(2,2,2.0);
+    nnc.addNNC(2, 2, 2.0);
     const std::vector<NNCdata>& nncdata = nnc.nncdata();
     BOOST_CHECK_EQUAL(nnc.numNNC(), 1);
     BOOST_CHECK_EQUAL(nncdata[0].cell1, 2);

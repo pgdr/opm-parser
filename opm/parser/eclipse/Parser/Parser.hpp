@@ -27,6 +27,7 @@
 #include <vector>
 #include <boost/filesystem.hpp>
 
+#include <opm/parser/eclipse/EclipseState/EclipseState.hpp>
 #include <opm/parser/eclipse/Parser/ParserKeyword.hpp>
 #include <opm/parser/eclipse/Utility/Stringview.hpp>
 
@@ -37,7 +38,6 @@ namespace Json {
 namespace Opm {
 
     class Deck;
-    class ParseContext;
     class RawKeyword;
 
     /// The hub of the parsing process.
@@ -51,12 +51,17 @@ namespace Opm {
         static std::string stripComments(const std::string& inputString);
 
         /// The starting point of the parsing process. The supplied file is parsed, and the resulting Deck is returned.
-        std::shared_ptr< Deck > parseFile(const std::string &dataFile, const ParseContext& parseContext) const;
-        std::shared_ptr< Deck > parseString(const std::string &data, const ParseContext& parseContext) const;
-        std::shared_ptr< Deck > parseStream(std::unique_ptr<std::istream>&& inputStream , const ParseContext& parseContext) const;
+        std::shared_ptr< Deck > parseFile(  const std::string &dataFile,
+                                            const ParseContext& parseContext) const;
+        std::shared_ptr< Deck > parseString(const std::string &data,
+                                            const ParseContext& parseContext) const;
+        std::shared_ptr< Deck > parseStream(std::unique_ptr<std::istream>&& inputStream,
+                                            const ParseContext& parseContext) const;
 
-        Deck * newDeckFromFile(const std::string &dataFileName, const ParseContext& parseContext) const;
-        Deck * newDeckFromString(const std::string &dataFileName, const ParseContext& parseContext) const;
+        Deck * newDeckFromFile(  const std::string &dataFileName,
+                                 const ParseContext& parseContext = ParseContext()) const;
+        Deck * newDeckFromString(const std::string &dataFileName,
+                                 const ParseContext& parseContext = ParseContext()) const;
 
         std::shared_ptr< Deck > parseFile(const std::string &dataFile, bool strict = true) const;
         std::shared_ptr< Deck > parseString(const std::string &data, bool strict = true) const;
@@ -93,6 +98,30 @@ namespace Opm {
             addParserKeyword( std::unique_ptr< ParserKeyword >( new T ) );
         }
 
+        // below are some helper functions
+
+        static EclipseState parse(const Deck& deck,            const ParseContext& context = ParseContext());
+        static EclipseState parse(const std::string &filename, const ParseContext& context = ParseContext());
+        static EclipseState parseData(const std::string &data, const ParseContext& context = ParseContext());
+
+        /// Parses the deck specified in filename.  If context contains ParseContext::PARSE_PARTIAL_DECK,
+        /// we construct only a lean grid, otherwise, we construct a full EclipseState and return the
+        /// fully constructed InputGrid
+        static std::shared_ptr<const EclipseGrid> parseGrid(const std::string &filename,
+                const ParseContext& context = ParseContext());
+
+        /// Parses the provided deck.  If context contains ParseContext::PARSE_PARTIAL_DECK,
+        /// we construct only a lean grid, otherwise, we construct a full EclipseState and return the
+        /// fully constructed InputGrid
+        static std::shared_ptr<const EclipseGrid> parseGrid(std::shared_ptr<const Deck> deck,
+                const ParseContext& context = ParseContext());
+
+        /// Parses the provided deck string.  If context contains ParseContext::PARSE_PARTIAL_DECK,
+        /// we construct only a lean grid, otherwise, we construct a full EclipseState and return the
+        /// fully constructed InputGrid
+        static std::shared_ptr<const EclipseGrid> parseGridData(const std::string &data,
+                const ParseContext& context = ParseContext());
+
 
     private:
         // associative map of the parser internal name and the corresponding ParserKeyword object
@@ -114,4 +143,3 @@ namespace Opm {
     typedef std::shared_ptr<const Parser> ParserConstPtr;
 } // namespace Opm
 #endif  /* PARSER_H */
-

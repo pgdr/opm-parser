@@ -52,9 +52,8 @@ along with OPM.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace Opm;
 
-
-static DeckPtr createDeckTOP() {
-const char *deckData =
+static std::string createDeckTOP() {
+    std::string deckData =
 "RUNSPEC\n"
 "\n"
 "DIMENS\n"
@@ -90,14 +89,11 @@ const char *deckData =
 "SATNUM\n"
 "1000*2 /\n"
 "\n";
-
-ParserPtr parser(new Parser());
-return parser->parseString(deckData, ParseContext()) ;
+    return deckData;
 }
 
 BOOST_AUTO_TEST_CASE(GetPOROTOPBased) {
-    DeckPtr deck = createDeckTOP();
-    EclipseState state(deck , ParseContext());
+    auto state = Opm::Parser::parseData(createDeckTOP());
     const Eclipse3DProperties& props = state.get3DProperties();
 
     const GridProperty<double>& poro  = props.getDoubleGridProperty( "PORO" );
@@ -111,8 +107,8 @@ BOOST_AUTO_TEST_CASE(GetPOROTOPBased) {
     }
 }
 
-static DeckPtr createDeck() {
-const char *deckData =
+static std::string createDeck() {
+    std::string deckData =
 "RUNSPEC\n"
 "\n"
 "DIMENS\n"
@@ -147,14 +143,11 @@ const char *deckData =
 "SATNUM\n"
 "1000*2 /\n"
 "\n";
-
-ParserPtr parser(new Parser());
-return parser->parseString(deckData, ParseContext()) ;
+    return deckData;
 }
 
-
-static DeckPtr createDeckNoFaults() {
-const char *deckData =
+static std::string createDeckNoFaults() {
+    std::string deckData =
 "RUNSPEC\n"
 "\n"
 "DIMENS\n"
@@ -176,24 +169,21 @@ const char *deckData =
 " 600*1 100*15 300*1 /\n"
 "\n";
 
-ParserPtr parser(new Parser());
-return parser->parseString(deckData, ParseContext()) ;
+    return deckData;
 }
-
 
 BOOST_AUTO_TEST_CASE(CreateSchedule) {
-DeckPtr deck = createDeck();
-EclipseState state(deck , ParseContext());
-ScheduleConstPtr schedule = state.getSchedule();
-EclipseGridConstPtr eclipseGrid = state.getInputGrid();
+    auto state = Opm::Parser::parseData(createDeck());
+    ScheduleConstPtr schedule = state.getSchedule();
+    EclipseGridConstPtr eclipseGrid = state.getInputGrid();
 
-BOOST_CHECK_EQUAL( schedule->getStartTime() , boost::posix_time::ptime(boost::gregorian::date(1998 , 3 , 8 )));
+    BOOST_CHECK_EQUAL(schedule->getStartTime(), boost::posix_time::ptime(boost::gregorian::date(1998, 3, 8)));
 }
 
 
 
-static DeckPtr createDeckSimConfig() {
-const std::string& inputStr = "RUNSPEC\n"
+static std::string createDeckSimConfig() {
+const std::string inputStr = "RUNSPEC\n"
 			  "EQLOPTS\n"
 			  "THPRES /\n "
 			  "DIMENS\n"
@@ -213,29 +203,22 @@ const std::string& inputStr = "RUNSPEC\n"
 			  "/\n"
 			  "\n";
 
-
-ParserPtr parser(new Parser());
-return parser->parseString(inputStr, ParseContext()) ;
+    return inputStr;
 }
-
 
 BOOST_AUTO_TEST_CASE(CreateSimulationConfig) {
 
-DeckPtr deck = createDeckSimConfig();
-EclipseState state(deck, ParseContext());
-SimulationConfigConstPtr simConf = state.getSimulationConfig();
+    auto state = Opm::Parser::parseData(createDeckSimConfig());
+    SimulationConfigConstPtr simConf = state.getSimulationConfig();
 
-BOOST_CHECK( simConf->hasThresholdPressure() );
+    BOOST_CHECK(simConf->hasThresholdPressure());
 
-std::shared_ptr<const ThresholdPressure> thresholdPressure = simConf->getThresholdPressure();
-BOOST_CHECK_EQUAL(thresholdPressure->size(), 3);
+    auto thresholdPressure = simConf->getThresholdPressure();
+    BOOST_CHECK_EQUAL(thresholdPressure->size(), 3);
 }
 
-
-
 BOOST_AUTO_TEST_CASE(PhasesCorrect) {
-    DeckPtr deck = createDeck();
-    EclipseState state( deck, ParseContext() );
+    auto state = Opm::Parser::parseData(createDeck());
     const auto& tm = state.getTableManager();
     BOOST_CHECK(   tm.hasPhase( Phase::PhaseEnum::OIL ));
     BOOST_CHECK(   tm.hasPhase( Phase::PhaseEnum::GAS ));
@@ -243,28 +226,21 @@ BOOST_AUTO_TEST_CASE(PhasesCorrect) {
 }
 
 BOOST_AUTO_TEST_CASE(TitleCorrect) {
-    DeckPtr deck = createDeck();
-    EclipseState state( deck, ParseContext() );
-
+    auto state = Opm::Parser::parseData(createDeck());
     BOOST_CHECK_EQUAL( state.getTitle(), "The title" );
 }
 
 BOOST_AUTO_TEST_CASE(IntProperties) {
-    DeckPtr deck = createDeck();
-    EclipseState state( deck, ParseContext() );
+    auto state = Opm::Parser::parseData(createDeck());
 
     BOOST_CHECK_EQUAL( false, state.get3DProperties().supportsGridProperty( "NONO" ) );
     BOOST_CHECK_EQUAL( true,  state.get3DProperties().supportsGridProperty( "SATNUM" ) );
     BOOST_CHECK_EQUAL( true,  state.get3DProperties().hasDeckIntGridProperty( "SATNUM" ) );
 }
 
-
 BOOST_AUTO_TEST_CASE(GetProperty) {
-    DeckPtr deck = createDeck();
-    EclipseState state(deck, ParseContext());
-
-    const auto& satNUM = state.get3DProperties().getIntGridProperty( "SATNUM" );
-
+    auto state = Opm::Parser::parseData(createDeck());
+    const auto& satNUM = state.get3DProperties().getIntGridProperty("SATNUM");
     BOOST_CHECK_EQUAL(1000U , satNUM.getCartesianSize() );
     for (size_t i=0; i < satNUM.getCartesianSize(); i++)
         BOOST_CHECK_EQUAL( 2 , satNUM.iget(i) );
@@ -273,8 +249,7 @@ BOOST_AUTO_TEST_CASE(GetProperty) {
 }
 
 BOOST_AUTO_TEST_CASE(GetTransMult) {
-    DeckPtr deck = createDeck();
-    EclipseState state( deck, ParseContext() );
+    auto state = Opm::Parser::parseData(createDeck());
     std::shared_ptr<const TransMult> transMult = state.getTransMult();
 
     BOOST_CHECK_EQUAL( 1.0, transMult->getMultiplier( 1, 0, 0, FaceDir::XPlus ) );
@@ -282,8 +257,7 @@ BOOST_AUTO_TEST_CASE(GetTransMult) {
 }
 
 BOOST_AUTO_TEST_CASE(GetFaults) {
-    DeckPtr deck = createDeck();
-    EclipseState state( deck, ParseContext() );
+    auto state = Opm::Parser::parseData(createDeck());
     const auto& faults = state.getFaults();
 
     BOOST_CHECK( faults.hasFault( "F1" ) );
@@ -303,8 +277,7 @@ BOOST_AUTO_TEST_CASE(GetFaults) {
 
 
 BOOST_AUTO_TEST_CASE(FaceTransMults) {
-    DeckPtr deck = createDeckNoFaults();
-    EclipseState state(deck, ParseContext());
+    auto state = Opm::Parser::parseData(createDeckNoFaults());
     std::shared_ptr<const TransMult> transMult = state.getTransMult();
 
     for (int i = 0; i < 10; ++ i) {
@@ -345,45 +318,41 @@ BOOST_AUTO_TEST_CASE(FaceTransMults) {
 }
 
 
-static DeckPtr createDeckNoGridOpts() {
-    const char *deckData =
-        "RUNSPEC\n"
-        "\n"
-        "DIMENS\n"
-        " 10 10 10 /\n"
-        "GRID\n"
-        "FLUXNUM\n"
-        "  1000*1 /\n"
-        "MULTNUM\n"
-        "  1000*1 /\n";
+static std::string createDeckNoGridOpts() {
+    std::string deckData =
+            "RUNSPEC\n"
+            "\n"
+            "DIMENS\n"
+            " 10 10 10 /\n"
+            "GRID\n"
+            "FLUXNUM\n"
+            "  1000*1 /\n"
+            "MULTNUM\n"
+            "  1000*1 /\n";
 
-    ParserPtr parser(new Parser());
-    return parser->parseString(deckData, ParseContext()) ;
+    return deckData;
 }
 
 
-static DeckPtr createDeckWithGridOpts() {
-    const char *deckData =
-        "RUNSPEC\n"
-        "GRIDOPTS\n"
-        "  'YES'   10 /"
-        "\n"
-        "DIMENS\n"
-        " 10 10 10 /\n"
-        "GRID\n"
-        "FLUXNUM\n"
-        "  1000*1 /\n"
-        "MULTNUM\n"
-        "  1000*1 /\n";
-
-    ParserPtr parser(new Parser());
-    return parser->parseString(deckData, ParseContext()) ;
+static std::string createDeckWithGridOpts() {
+    std::string deckData =
+            "RUNSPEC\n"
+            "GRIDOPTS\n"
+            "  'YES'   10 /"
+            "\n"
+            "DIMENS\n"
+            " 10 10 10 /\n"
+            "GRID\n"
+            "FLUXNUM\n"
+            "  1000*1 /\n"
+            "MULTNUM\n"
+            "  1000*1 /\n";
+    return deckData;
 }
 
 
 BOOST_AUTO_TEST_CASE(NoGridOptsDefaultRegion) {
-    DeckPtr deck = createDeckNoGridOpts();
-    EclipseState state(deck, ParseContext());
+    auto state = Opm::Parser::parseData(createDeckNoGridOpts());
     const auto& props   = state.get3DProperties();
     const auto& multnum = props.getIntGridProperty("MULTNUM");
     const auto& fluxnum = props.getIntGridProperty("FLUXNUM");
@@ -394,10 +363,8 @@ BOOST_AUTO_TEST_CASE(NoGridOptsDefaultRegion) {
     BOOST_CHECK_NE( &fluxnum  , &multnum );
 }
 
-
 BOOST_AUTO_TEST_CASE(WithGridOptsDefaultRegion) {
-    DeckPtr deck = createDeckWithGridOpts();
-    EclipseState state(deck, ParseContext());
+    auto state = Opm::Parser::parseData(createDeckWithGridOpts());
     const auto& props   = state.get3DProperties();
     const auto& multnum = props.getIntGridProperty("MULTNUM");
     const auto& fluxnum = props.getIntGridProperty("FLUXNUM");
@@ -409,22 +376,17 @@ BOOST_AUTO_TEST_CASE(WithGridOptsDefaultRegion) {
 }
 
 BOOST_AUTO_TEST_CASE(TestIOConfigBaseName) {
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-    EclipseState state(*deck, parseContext);
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     BOOST_CHECK_EQUAL(state.getIOConfig()->getBaseName(), "SPE1CASE2");
     BOOST_CHECK_EQUAL(state.getIOConfig()->getOutputDir(), "testdata/integration_tests/IOConfig");
 
-    ParserPtr parser2(new Parser());
-    DeckConstPtr deck2 = createDeckWithGridOpts();
-    EclipseState state2(*deck2, parseContext);
+    EclipseState state2 = Parser::parseData(createDeckWithGridOpts());
     BOOST_CHECK_EQUAL(state2.getIOConfig()->getBaseName(), "");
     BOOST_CHECK_EQUAL(state2.getIOConfig()->getOutputDir(), ".");
 }
 
 BOOST_AUTO_TEST_CASE(TestIOConfigCreation) {
-    const char * deckData  =
+    std::string deckData  =
                           "RUNSPEC\n"
                           "GRIDOPTS\n"
                           "  'YES'   10 /"
@@ -448,12 +410,8 @@ BOOST_AUTO_TEST_CASE(TestIOConfigCreation) {
                           "/\n";
 
 
-    ParserPtr parser(new Parser());
-    DeckPtr deck = parser->parseString(deckData, ParseContext()) ;
-    EclipseState state(deck , ParseContext());
-
+    auto state = Opm::Parser::parseData(deckData);
     IOConfigConstPtr ioConfig = state.getIOConfigConst();
-
     BOOST_CHECK_EQUAL(false, ioConfig->getWriteRestartFile(0));
     BOOST_CHECK_EQUAL(false, ioConfig->getWriteRestartFile(1));
     BOOST_CHECK_EQUAL(true, ioConfig->getWriteRestartFile(2));
@@ -462,7 +420,7 @@ BOOST_AUTO_TEST_CASE(TestIOConfigCreation) {
 
 
 BOOST_AUTO_TEST_CASE(TestIOConfigCreationWithSolutionRPTRST) {
-    const char * deckData  =
+    std::string deckData  =
                           "RUNSPEC\n"
                           "GRIDOPTS\n"
                           "  'YES'   10 /"
@@ -490,11 +448,7 @@ BOOST_AUTO_TEST_CASE(TestIOConfigCreationWithSolutionRPTRST) {
                           " 20  JAN 2011 / \n"
                           "/\n";
 
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckPtr deck = parser->parseString(deckData, parseContext) ;
-    EclipseState state(deck, parseContext);
-
+    auto state = Opm::Parser::parseData(deckData);
     IOConfigConstPtr ioConfig = state.getIOConfigConst();
 
     BOOST_CHECK_EQUAL(true  , ioConfig->getWriteRestartFile(0));
@@ -506,7 +460,7 @@ BOOST_AUTO_TEST_CASE(TestIOConfigCreationWithSolutionRPTRST) {
 
 
 BOOST_AUTO_TEST_CASE(TestIOConfigCreationWithSolutionRPTSOL) {
-  const char *deckData =
+    std::string deckData =
                         "RUNSPEC\n"
                         "DIMENS\n"
                         " 10 10 10 /\n"
@@ -534,7 +488,7 @@ BOOST_AUTO_TEST_CASE(TestIOConfigCreationWithSolutionRPTSOL) {
                         "RESTART=1\n"
                         "/\n";
 
-    const char *deckData2 =
+    std::string deckData2 =
                           "RUNSPEC\n"
                           "DIMENS\n"
                           " 10 10 10 /\n"
@@ -563,31 +517,21 @@ BOOST_AUTO_TEST_CASE(TestIOConfigCreationWithSolutionRPTSOL) {
                           "/\n";
 
 
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-
     {   //mnemnonics
-        DeckPtr deck = parser->parseString(deckData, parseContext) ;
-        EclipseState state(deck, parseContext);
-
+        auto state = Opm::Parser::parseData(deckData);
         IOConfigConstPtr ioConfig = state.getIOConfigConst();
-
         BOOST_CHECK_EQUAL(true, ioConfig->getWriteRestartFile(0));
-        BOOST_CHECK_EQUAL(&parseContext , &(state.getParseContext()));
     }
 
     {   //old fashion integer mnemonics
-        DeckPtr deck = parser->parseString(deckData2, parseContext) ;
-        EclipseState state(deck, parseContext);
-
+        auto state = Opm::Parser::parseData(deckData2);
         IOConfigConstPtr ioConfig = state.getIOConfigConst();
-
         BOOST_CHECK_EQUAL(true, ioConfig->getWriteRestartFile(0));
     }
 }
 
 BOOST_AUTO_TEST_CASE(getRegions) {
-    const char* input =
+    std::string input =
             "START             -- 0 \n"
             "10 MAI 2007 / \n"
             "RUNSPEC\n"
@@ -602,14 +546,13 @@ BOOST_AUTO_TEST_CASE(getRegions) {
             "FIPNUM\n"
             "1 1 2 3 /\n";
 
-    const auto deck = Parser().parseString(input, ParseContext());
-    EclipseState es( deck, ParseContext() );
+    auto state = Opm::Parser::parseData(input);
 
-    std::vector< int > ref = { 1, 2, 3 };
-    const auto regions = es.getRegions( "FIPNUM" );
+    std::vector<int> ref = { 1, 2, 3 };
+    const auto regions = state.getRegions("FIPNUM");
 
     BOOST_CHECK_EQUAL_COLLECTIONS( ref.begin(), ref.end(),
                                    regions.begin(), regions.end() );
 
-    BOOST_CHECK( es.getRegions( "EQLNUM" ).empty() );
+    BOOST_CHECK(state.getRegions("EQLNUM").empty());
 }

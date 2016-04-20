@@ -81,8 +81,6 @@ namespace Opm {
         /// [deprecated]
         explicit EclipseGrid(const std::shared_ptr<const Deck>& deck, const int * actnum = nullptr);
 
-        static bool hasCornerPointKeywords(const Deck&);
-        static bool hasCartesianKeywords(const Deck&);
         size_t  getNumActive( ) const;
         size_t  getNX( ) const;
         size_t  getNY( ) const;
@@ -100,8 +98,6 @@ namespace Opm {
 
         size_t getGlobalIndex(size_t i, size_t j, size_t k) const;
         std::array<int, 3> getIJK(size_t globalIndex) const;
-        void assertGlobalIndex(size_t globalIndex) const;
-        void assertIJK(size_t i , size_t j , size_t k) const;
         std::array<double, 3> getCellCenter(size_t i,size_t j, size_t k) const;
         std::array<double, 3> getCellCenter(size_t globalIndex) const;
         double getCellVolume(size_t globalIndex) const;
@@ -114,7 +110,6 @@ namespace Opm {
         bool cellActive( size_t i , size_t j, size_t k ) const;
         double getCellDepth(size_t i,size_t j, size_t k) const;
         double getCellDepth(size_t globalIndex) const;
-
 
         void exportMAPAXES( std::vector<double>& mapaxes) const;
         void exportCOORD( std::vector<double>& coord) const;
@@ -139,6 +134,8 @@ namespace Opm {
         MessageContainer m_messages;
 
         void assertCellInfo() const;
+        void assertGlobalIndex(size_t globalIndex) const;
+        void assertIJK(size_t i , size_t j , size_t k) const;
 
         void initCartesianGrid(const std::vector<int>& dims, const Deck&);
         void initCornerPointGrid(const std::vector<int>& dims, const Deck&);
@@ -147,8 +144,6 @@ namespace Opm {
         void initGrid(const std::vector<int>& dims, const Deck&);
 
         void assertCornerPointKeywords(const std::vector<int>& dims, const Deck&);
-        static bool hasDVDEPTHZKeywords(const Deck&);
-        static bool hasDTOPSKeywords(const Deck&);
         static void assertVectorSize(const std::vector<double>& vector, size_t expectedSize, const std::string& msg);
         static std::vector<double> createTOPSVector(const std::vector<int>& dims, const std::vector<double>& DZ,
                 const Deck&);

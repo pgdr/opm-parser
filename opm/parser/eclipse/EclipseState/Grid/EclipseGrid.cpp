@@ -43,6 +43,30 @@
 
 namespace Opm {
 
+    static bool hasDVDEPTHZKeywords(const Deck& deck) {
+        return deck.hasKeyword<ParserKeywords::DXV>()
+            && deck.hasKeyword<ParserKeywords::DYV>()
+            && deck.hasKeyword<ParserKeywords::DZV>()
+            && deck.hasKeyword<ParserKeywords::DEPTHZ>();
+    }
+
+    static bool hasDTOPSKeywords(const Deck& deck) {
+        return (deck.hasKeyword<ParserKeywords::DX>() || deck.hasKeyword<ParserKeywords::DXV>())
+            && (deck.hasKeyword<ParserKeywords::DY>() || deck.hasKeyword<ParserKeywords::DYV>())
+            && (deck.hasKeyword<ParserKeywords::DZ>() || deck.hasKeyword<ParserKeywords::DZV>())
+            &&  deck.hasKeyword<ParserKeywords::TOPS>();
+    }
+
+    static bool hasCartesianKeywords(const Deck& deck) {
+        return hasDVDEPTHZKeywords(deck)
+            || hasDTOPSKeywords(deck);
+    }
+
+    static bool hasCornerPointKeywords(const Deck& deck) {
+        return deck.hasKeyword<ParserKeywords::ZCORN>()
+            && deck.hasKeyword<ParserKeywords::COORD>();
+    }
+
     /**
        Will create an EclipseGrid instance based on an existing
        GRID/EGRID file.
@@ -355,13 +379,6 @@ namespace Opm {
 
 
 
-    bool EclipseGrid::hasCornerPointKeywords(const Deck& deck) {
-        if (deck.hasKeyword<ParserKeywords::ZCORN>() && deck.hasKeyword<ParserKeywords::COORD>())
-            return true;
-        else
-            return false;
-    }
-
 
     void EclipseGrid::assertCornerPointKeywords( const std::vector<int>& dims , const Deck& deck)
     {
@@ -393,37 +410,6 @@ namespace Opm {
             }
         }
     }
-
-
-
-    bool EclipseGrid::hasCartesianKeywords(const Deck& deck) {
-        if (hasDVDEPTHZKeywords( deck ))
-            return true;
-        else
-            return hasDTOPSKeywords(deck);
-    }
-
-
-    bool EclipseGrid::hasDVDEPTHZKeywords(const Deck& deck) {
-        if (deck.hasKeyword<ParserKeywords::DXV>() &&
-            deck.hasKeyword<ParserKeywords::DYV>() &&
-            deck.hasKeyword<ParserKeywords::DZV>() &&
-            deck.hasKeyword<ParserKeywords::DEPTHZ>())
-            return true;
-        else
-            return false;
-    }
-
-    bool EclipseGrid::hasDTOPSKeywords(const Deck& deck) {
-        if ((deck.hasKeyword<ParserKeywords::DX>() || deck.hasKeyword<ParserKeywords::DXV>()) &&
-            (deck.hasKeyword<ParserKeywords::DY>() || deck.hasKeyword<ParserKeywords::DYV>()) &&
-            (deck.hasKeyword<ParserKeywords::DZ>() || deck.hasKeyword<ParserKeywords::DZV>()) &&
-            deck.hasKeyword<ParserKeywords::TOPS>())
-            return true;
-        else
-            return false;
-    }
-
 
 
     void EclipseGrid::assertVectorSize(const std::vector<double>& vector , size_t expectedSize , const std::string& vectorName) {

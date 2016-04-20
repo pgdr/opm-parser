@@ -298,12 +298,7 @@ BOOST_AUTO_TEST_CASE( NorneResttartConfig ) {
     rptConfig.push_back( std::make_tuple(240 , true , boost::gregorian::date( 2006,10,1)) );
     rptConfig.push_back( std::make_tuple(241 , true , boost::gregorian::date( 2006,10,10)) );
 
-
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/RPTRST_DECK.DATA", parseContext);
-    EclipseState state( deck , parseContext );
-
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/RPTRST_DECK.DATA");
     verifyRestartConfig(state.getIOConfigConst(), rptConfig);
 }
 
@@ -344,10 +339,7 @@ BOOST_AUTO_TEST_CASE( RestartConfig2 ) {
         else    rptConfig.push_back( std::make_tuple(report_step, false, boost::gregorian::date(2000,1,1)));
     }
 
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/RPT_TEST2.DATA", parseContext);
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/RPT_TEST2.DATA");
     std::shared_ptr<const IOConfig> ioConfig = state.getIOConfigConst();
     verifyRestartConfig(ioConfig, rptConfig);
 
@@ -500,11 +492,7 @@ void fillRptConfig(std::vector<std::tuple<int, bool, boost::gregorian::date>>& r
 BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC5_SET_ON_TIMESTEP_1 ) {
 
     //Write reportfile every first day of a month
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-    EclipseState state( deck , parseContext );
-
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
 
     int basic = 5;
@@ -525,10 +513,7 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC5_SET_ON_TIMESTEP_1 ) {
 BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC5_SET_ON_TIMESTEP_13 ) {
 
     //Write reportfile every first day of a month
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
 
     int basic = 5;
@@ -556,10 +541,7 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC5_SET_ON_TIMESTEP_13 ) {
 BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC5_SET_ON_TIMESTEP_14 ) {
 
     //Write reportfile every first day of a month
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
 
     int basic = 5;
@@ -584,10 +566,7 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC5_SET_ON_TIMESTEP_14 ) {
 BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC5_SET_ON_TIMESTEP_37 ) {
 
     //Write reportfile every first day of a month
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
 
     int basic = 5;
@@ -642,11 +621,7 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC5_FREQ10_SET_ON_TIMESTEP_10 ) {
         }
     }
 
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
 
     int basic = 5;
@@ -676,11 +651,7 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC5_FREQ40_SET_ON_TIMESTEP_1 ) {
         }
     }
 
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
 
     int basic = 5;
@@ -700,10 +671,7 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC5_FREQ40_SET_ON_TIMESTEP_1 ) {
 BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC5_FREQ40_SET_ON_TIMESTEP_14 ) {
 
     //Write reportfile every first day of a month, with frequency 40
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
 
     int basic = 5;
@@ -765,11 +733,7 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC4_SET_ON_TIMESTEP_1 ) {
         }
     }
 
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
 
     int basic = 4;
@@ -812,14 +776,8 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC4_SET_ON_TIMESTEP_12 ) {
         }
     }
 
-
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
-
 
     int basic = 4;
     ioconfig->handleRPTRSTBasic(state.getSchedule()->getTimeMap(),
@@ -858,14 +816,8 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC4_SET_ON_TIMESTEP_13 ) {
         }
     }
 
-
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
-
 
     int basic = 4;
     ioconfig->handleRPTRSTBasic(state.getSchedule()->getTimeMap(),
@@ -894,14 +846,8 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC4_FREQ3_SET_ON_TIMESTEP_13 ) {
         }
     }
 
-
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
-
 
     int basic = 4;
     int freq  = 3;
@@ -973,12 +919,7 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC3_FREQ5_SET_ON_TIMESTEP_11 ) {
         }
     }
 
-
-    ParseContext parseContext;
-    ParserPtr parser(new Parser());
-    DeckConstPtr deck = parser->parseFile("testdata/integration_tests/IOConfig/SPE1CASE2.DATA", parseContext);
-
-    EclipseState state( deck , parseContext );
+    auto state = Parser::parse("testdata/integration_tests/IOConfig/SPE1CASE2.DATA");
     std::shared_ptr<IOConfig> ioconfig = state.getIOConfig();
 
 
@@ -991,13 +932,3 @@ BOOST_AUTO_TEST_CASE( SPE1CASE2_BASIC3_FREQ5_SET_ON_TIMESTEP_11 ) {
 
     verifyRestartConfig(state.getIOConfigConst(), rptConfig);
 }
-
-
-
-
-
-
-
-
-
-
