@@ -31,7 +31,11 @@ namespace Opm {
         return Equil( deck.getKeyword( "EQUIL" ) );
     }
 
-    InitConfig::InitConfig(DeckConstPtr deck) : equil( equils( *deck ) ) {
+    InitConfig::InitConfig(DeckConstPtr deck) :
+            InitConfig(*deck)
+    {}
+
+    InitConfig::InitConfig(const Deck& deck) : equil( equils( deck ) ) {
         m_restartInitiated = false;
         m_restartStep = 0;
         m_restartRootName = "";
@@ -39,9 +43,9 @@ namespace Opm {
         initRestartKW(deck);
     }
 
-    void InitConfig::initRestartKW(DeckConstPtr deck) {
-        if (deck->hasKeyword("RESTART") && deck->hasKeyword("SKIPREST")) {
-            const auto& restart_kw = deck->getKeyword("RESTART");
+    void InitConfig::initRestartKW(const Deck& deck) {
+        if (deck.hasKeyword("RESTART") && deck.hasKeyword("SKIPREST")) {
+            const auto& restart_kw = deck.getKeyword("RESTART");
             const auto& restart_dataRecord = restart_kw.getRecord(0);
             const auto& restart_rootname_item = restart_dataRecord.getItem(0);
             const std::string restart_rootname_string = restart_rootname_item.get< std::string >(0);
@@ -57,7 +61,7 @@ namespace Opm {
             m_restartInitiated = true;
             m_restartStep = restart_report_step_int;
             m_restartRootName = restart_rootname_string;
-        } else if (deck->hasKeyword("RESTART") || deck->hasKeyword("SKIPREST")){
+        } else if (deck.hasKeyword("RESTART") || deck.hasKeyword("SKIPREST")){
             throw std::runtime_error("Error in deck: Only one of the kewywords RESTART and SKIPREST are supplied. None or both of them should be supplied.");
         }
     }
