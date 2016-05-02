@@ -250,7 +250,7 @@ namespace Opm {
     }
 
     /// static helper function checking that _one_ coordinate differs with 1
-    bool ijk_are_adj(int i1, int j1, int k1, int i2, int j2, int k2) {
+    bool ijkAreAdj(int i1, int j1, int k1, int i2, int j2, int k2) {
         return ((i1-i2)*(i1-i2)+
                 (j1-j2)*(j1-j2)+
                 (k1-k2)*(k1-k2)) == 1;
@@ -262,8 +262,8 @@ namespace Opm {
 
         auto cell1 = getIJK(g1);
         auto cell2 = getIJK(g2);
-        return ijk_are_adj(cell1[0], cell1[1], cell1[2],
-                           cell2[0], cell2[1], cell2[2]);
+        return ijkAreAdj(cell1[0], cell1[1], cell1[2],
+                         cell2[0], cell2[1], cell2[2]);
     }
 
 
