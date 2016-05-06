@@ -70,27 +70,36 @@ public:
     ///  Get the octave output of the grid for the given keyword.
     ///
     void octave(std::string keyword) {
+
+        // we are essentially storing three vectors that form the coordinates, and then a value vector.
+        // The coordinate given by xvec[i], yvec[i], zvec[i] has value val_vec[i].
+
         std::vector<size_t> xvec;
         std::vector<size_t> yvec;
         std::vector<size_t> zvec;
-        std::vector<double> d_val_vec;
+        std::vector<double> val_vec;
 
         bool is_int = false;
-        if (m_state.get3DProperties().hasDeckDoubleGridProperty(keyword))
+        if (m_state.get3DProperties().supportsGridProperty(keyword,
+                Eclipse3DProperties::EnabledTypes::DoubleProperties))
             is_int = false;
-        else if (m_state.get3DProperties().hasDeckIntGridProperty(keyword))
+        else if (m_state.get3DProperties().supportsGridProperty(keyword,
+                Eclipse3DProperties::EnabledTypes::IntProperties))
             is_int = true;
         else {
 
             // okay, no such keyword, try uppercasing it ...
 
             upcase(keyword);
-            if (m_state.get3DProperties().hasDeckDoubleGridProperty(keyword))
+            if (m_state.get3DProperties().supportsGridProperty(keyword,
+                    Eclipse3DProperties::EnabledTypes::DoubleProperties))
                 is_int = false;
-            else if (m_state.get3DProperties().hasDeckIntGridProperty(keyword))
+            else if (m_state.get3DProperties().supportsGridProperty(keyword,
+                    Eclipse3DProperties::EnabledTypes::IntProperties))
                 is_int = true;
             else {
-                std::cout << "%%%--- NO SUCH KEYWORD " + keyword + ".  Suggestion:  Try with an _actual_ keyword?";
+                std::cout << "%%%--- NO SUCH KEYWORD " + keyword + ".  Suggestion:  Try with an _actual_ keyword?"
+                        << std::endl;
                 return;
             }
         }
@@ -108,38 +117,69 @@ public:
         for (size_t x = 0; x < grid->getNX(); x++) {
             for (size_t y = 0; y < grid->getNY(); y++) {
                 for (size_t z = 0; z < grid->getNZ(); z++) {
-                    if (data[globalIndex] != 0) {
-                        xvec.push_back(x);
-                        yvec.push_back(y);
-                        zvec.push_back(grid->getNZ() - z); // invert to get Z=0 on top
-                        d_val_vec.push_back(data[globalIndex]);
-                    }
+                    double val = data[globalIndex];
+                    if (val == 0)
+                        continue;       // don't output empty values
+                    if (isnan(val))
+                        val = 1000;   // real magic
+                    xvec.push_back(x);
+                    yvec.push_back(y);
+                    zvec.push_back(grid->getNZ() - z); // invert to get Z=0 on top
+                    val_vec.push_back(val);
                     ++globalIndex;
                 }
             }
         }
 
+        std::cout << "%%%---  OUTPUT |X| = " << xvec.size() << std::endl;
+        std::cout << "%%%---         |Y| = " << yvec.size() << std::endl;
+        std::cout << "%%%---         |Z| = " << zvec.size() << std::endl;
+        std::cout << "%%%---         |V| = " << val_vec.size() << std::endl;
+        std::cout << "%%%---         SUM = " << xvec.size() + yvec.size() + zvec.size() + val_vec.size() << std::endl;
+
+        size_t MAX_LIMIT = 40000;
+        if (xvec.size() > MAX_LIMIT) {
+            std::cout << "%%%---  EXCEEDING LIMIT |X| > " << MAX_LIMIT << std::endl;
+            std::cout << "%%%---  TRUNCATING AT VALUE   " << MAX_LIMIT << std::endl;
+            std::cerr << "WARN: " << xvec.size() << " > " << MAX_LIMIT << std::endl;
+            std::cerr << "WARN: TRUNCATING VALUES AT " << MAX_LIMIT << std::endl;
+        }
+
+        size_t counter = 0;
+
         std::cout << "X = [0 ";
         for (auto xval : xvec) {
+            if (++counter > MAX_LIMIT)
+                break;
             std::cout << xval << " ";
         }
         std::cout << grid->getNX() << "];" << std::endl;
 
+        counter = 0;
         std::cout << "Y = [0 ";
         for (auto yval : yvec) {
+            if (++counter > MAX_LIMIT)
+                break;
             std::cout << yval << " ";
         }
         std::cout << grid->getNY() << "];" << std::endl;
 
+        counter = 0;
         std::cout << "Z = [0 ";
         for (auto zval : zvec) {
+            if (++counter > MAX_LIMIT)
+                break;
             std::cout << zval << " ";
         }
         std::cout << grid->getNZ() << "];" << std::endl;
 
+        counter = 0;
         std::cout << "V = [0 ";
-        for (auto val : d_val_vec)
+        for (auto val : val_vec) {
+            if (++counter > MAX_LIMIT)
+                break;
             std::cout << val << " ";
+        }
 
         std::cout << "0];" << std::endl;
 
