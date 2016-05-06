@@ -41,6 +41,11 @@ std::shared_ptr<const EclipseGrid> parseGrid(const char * deck_file) {
 }
 
 EclipseState parse(const char * deck_file, bool verbose) {
+
+    std::string fileName(deck_file);
+
+    std::cout << "READING FILE \"" << fileName << "\"." << std::flush << std::endl;
+
     ParseContext parseContext;
 
     {
@@ -62,14 +67,17 @@ EclipseState parse(const char * deck_file, bool verbose) {
 
     if (verbose) {
         std::cout << "parse complete" << std::endl << std::flush;
+        std::cout << STARTLINE << "Verifying grid possibilities ... ";
+    }
+    if (verbose) {
+        std::cout << "grid test complete.  Constructed " << " grid." << std::endl << std::flush;
         std::cout << STARTLINE << "Creating EclipseState ... ";
     }
 
-    auto state = EclipseState(deck, parseContext);
     if (verbose)
         std::cout << "done." << std::endl;
 
-    return state;
+    return EclipseState(deck);
 }
 
 
