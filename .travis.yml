@@ -26,7 +26,7 @@ addons:
 before_install:
     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8" FC="gfortran-4.8"; fi
     - python travis/find-dependencies.py | python travis/write-dependencies.py > pulls.sh
-    - pulls.sh
+    - bash pulls.sh
     - cd ..
 
 
