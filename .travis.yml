@@ -21,14 +21,17 @@ addons:
       - gfortran-4.8
       - liblapack-dev
       - clang
+      - python-requests
 
-install:
+before_install:
     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8" FC="gfortran-4.8"; fi
-
+    - python travis/find-dependencies.py | python travis/write-dependencies.py > pulls.sh
+    - pulls.sh
     - cd ..
 
-    - git clone https://github.com/OPM/opm-common.git
-    - git clone https://github.com/OPM/opm-data.git
+
+
+install:
 
     - opm-common/travis/build-opm-common-shared.sh
     - opm-parser/travis/clone-and-build-ert.sh
