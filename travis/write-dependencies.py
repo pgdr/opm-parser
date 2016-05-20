@@ -5,7 +5,7 @@ import sys
 projects = ['opm-common','opm-parser','opm-output','opm-grid','opm-material','opm-core','opm-simulators', 'opm-upscaling']
 # TODO add ewoms?
 
-base = 'git:github.com/OPM'
+base = 'git@github.com:OPM'
 
 deps = {}
 
@@ -18,9 +18,9 @@ for line in sys.stdin:
 
 for proj in projects:
     if proj in deps:
-        print 'git clone %s/%s' % (base,proj) # specific PR
+        print 'git clone %s/%s.git' % (base,proj) # specific PR
         print 'cd %s' % proj
         print 'git fetch origin +refs/pull/%s/merge:' % pr
         print 'cd ..'
     else:
-        print 'git clone %s/%s' % (base,proj) # only master
+        print 'git clone %s/%s.git' % (base,proj) # only master
