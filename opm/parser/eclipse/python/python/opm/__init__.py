@@ -28,3 +28,5 @@ class OPMPrototype(Prototype):
     def __init__(self , prototype , bind = True):
         super(OPMPrototype , self).__init__( OPMPrototype.lib , prototype , bind = bind)
 
+from .int_vector import IntVector
+from .double_vector import DoubleVector

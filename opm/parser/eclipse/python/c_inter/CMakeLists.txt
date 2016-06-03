@@ -1,5 +1,7 @@
 add_library(copmparser SHARED
 cparser.cc
+cstate.cc
+cutil.cc
 cdeck.cc cdeck_keyword.cc cdeck_record.cc cdeck_item.cc
 cparse_context.cc
 ctable_manager.cc

@@ -1,5 +1,6 @@
 set(PYTHON_SOURCES
     __init__.py
+    #eplipse.py
 )
 
 add_python_package("opm"  ${PYTHON_INSTALL_PREFIX}/opm "${PYTHON_SOURCES}" True)
