@@ -65,6 +65,8 @@ namespace Opm {
         bool hasDeckIntGridProperty(const std::string& keyword) const;
         bool hasDeckDoubleGridProperty(const std::string& keyword) const;
         bool supportsGridProperty(const std::string& keyword) const;
+        bool supportsIntGridProperty(const std::string& keyword) const;
+        bool supportsDoubleGridProperty(const std::string& keyword) const;
         MessageContainer getMessageContainer();
 
     private:

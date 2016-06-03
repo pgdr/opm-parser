@@ -424,7 +424,18 @@ namespace Opm {
     }
 
     bool Eclipse3DProperties::supportsGridProperty(const std::string& keyword) const {
-        return m_doubleGridProperties.supportsKeyword( keyword ) || m_intGridProperties.supportsKeyword( keyword );
+        return supportsIntGridProperty(keyword) || supportsDoubleGridProperty(keyword);
+    }
+
+
+
+    bool Eclipse3DProperties::supportsIntGridProperty(const std::string& keyword) const {
+        return m_intGridProperties.supportsKeyword( keyword );
+    }
+
+
+    bool Eclipse3DProperties::supportsDoubleGridProperty(const std::string& keyword) const {
+        return m_doubleGridProperties.supportsKeyword( keyword );
     }
 
 
