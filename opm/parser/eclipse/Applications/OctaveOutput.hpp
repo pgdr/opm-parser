@@ -80,29 +80,30 @@ public:
         std::vector<double> val_vec;
 
         bool is_int = false;
-        if (m_state.get3DProperties().supportsGridProperty(keyword,
-                Eclipse3DProperties::EnabledTypes::DoubleProperties))
-            is_int = false;
-        else if (m_state.get3DProperties().supportsGridProperty(keyword,
-                Eclipse3DProperties::EnabledTypes::IntProperties))
-            is_int = true;
-        else {
-
-            // okay, no such keyword, try uppercasing it ...
-
-            upcase(keyword);
-            if (m_state.get3DProperties().supportsGridProperty(keyword,
-                    Eclipse3DProperties::EnabledTypes::DoubleProperties))
-                is_int = false;
-            else if (m_state.get3DProperties().supportsGridProperty(keyword,
-                    Eclipse3DProperties::EnabledTypes::IntProperties))
-                is_int = true;
-            else {
-                std::cout << "%%%--- NO SUCH KEYWORD " + keyword + ".  Suggestion:  Try with an _actual_ keyword?"
-                        << std::endl;
-                return;
-            }
-        }
+        // TODO uncomm
+//        if (m_state.get3DProperties().supportsGridProperty(keyword,
+//                Eclipse3DProperties::EnabledTypes::DoubleProperties))
+//            is_int = false;
+//        else if (m_state.get3DProperties().supportsGridProperty(keyword,
+//                Eclipse3DProperties::EnabledTypes::IntProperties))
+//            is_int = true;
+//        else {
+//
+//            // okay, no such keyword, try uppercasing it ...
+//
+//            upcase(keyword);
+//            if (m_state.get3DProperties().supportsGridProperty(keyword,
+//                    Eclipse3DProperties::EnabledTypes::DoubleProperties))
+//                is_int = false;
+//            else if (m_state.get3DProperties().supportsGridProperty(keyword,
+//                    Eclipse3DProperties::EnabledTypes::IntProperties))
+//                is_int = true;
+//            else {
+//                std::cout << "%%%--- NO SUCH KEYWORD " + keyword + ".  Suggestion:  Try with an _actual_ keyword?"
+//                        << std::endl;
+//                return;
+//            }
+//        }
 
         std::vector<double> data = getProperty(keyword, is_int);
 
