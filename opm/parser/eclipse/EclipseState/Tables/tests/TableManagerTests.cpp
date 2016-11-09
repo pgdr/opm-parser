@@ -153,6 +153,9 @@ BOOST_AUTO_TEST_CASE( CreateTablesWithVd ) {
 
     for (size_t t_idx = 0; t_idx < swfnTab.size(); t_idx++) {
         const auto tab = swfnTab.getTable(t_idx);
+
+        BOOST_CHECK_NO_THROW( tab.getColumn("PCOW") );
+
         for (size_t c_idx = 0; c_idx < tab.numColumns(); c_idx++) {
             const auto col = tab.getColumn(c_idx);
             for (size_t i = 0; i < col.size(); i++) {
@@ -185,6 +188,9 @@ BOOST_AUTO_TEST_CASE( CreateTablesWithJFunc ) {
 
     for (size_t tab = 0; tab < swfnTab.size(); tab++) {
         const auto& t = swfnTab.getTable(tab);
+
+        BOOST_CHECK_THROW( t.getColumn("PCOW"), std::invalid_argument );
+
         for (size_t c_idx = 0; c_idx < t.numColumns(); c_idx++) {
             const auto& col = t.getColumn(c_idx);
             for (size_t i = 0; i < col.size(); i++) {

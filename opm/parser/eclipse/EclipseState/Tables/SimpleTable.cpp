@@ -106,6 +106,11 @@ namespace Opm {
     }
 
     const TableColumn& SimpleTable::getColumn( const std::string& name) const {
+        if (!this->m_jfunc)
+            return m_columns.get( name );
+
+        if (name == "PCOW" || name == "PCOG")
+            assertJFuncPressure(false); // this will throw since m_jfunc=true
         return m_columns.get( name );
     }
 
@@ -115,6 +120,11 @@ namespace Opm {
 
 
     TableColumn& SimpleTable::getColumn( const std::string& name) {
+        if (!this->m_jfunc)
+            return m_columns.get( name );
+
+        if (name == "PCOW" || name == "PCOG")
+            assertJFuncPressure(false); // this will throw since m_jfunc=true
         return m_columns.get( name );
     }
 
